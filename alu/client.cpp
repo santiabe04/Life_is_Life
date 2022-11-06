@@ -1,3 +1,6 @@
+#include <string>
+#include <iostream>
+#include <thread>
 #include "header.h"
 
 using namespace std;
@@ -93,14 +96,18 @@ int run_cell(int port)
   
     /* Enviar msg al srv con el puerto de escucha */
     /* TO DO*/
+    /* hacer un send */
     
     /* Obtener lista de vecinos inicial */
+    /* hay una funcion sobre eso */
     /* TO DO*/
 
     /* Conectarse a los vecinos */
+    /* con2neight */
     /* TO DO*/ 
 
     /* Enviar msg ready para el server */
+    /* otro send */
     /* TO DO*/
 
     /* Comenzar juego */
@@ -113,23 +120,28 @@ int run_cell(int port)
         if (strncmp(srv_req.type,"TICK",4) == 0)
         {
             /* Publicar estado*/
+            /* hacer un send */
             /* TO DO*/
 
             /* Obtener estado de los vecinos*/
             /* TO DO*/
 
             /* Computar nuevo estado*/
+            /* usar el set_state */
             /* TO DO*/
 
             /* Informar al srv nuevo estado*/
+            /* hacer un send */
             /* TO DO*/
         }
         else if (strncmp(srv_req.type,"NEW",3) == 0)
         {
             /* Conectarse a los nuevos vecinos*/
+            /* hacer eñ con2neigh*/
             /* TO DO*/
 
             /* Avisar con CLIENT_READY al srv*/
+            /* server */
             /* TO DO*/
 
         } 
