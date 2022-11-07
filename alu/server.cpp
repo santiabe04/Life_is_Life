@@ -17,8 +17,7 @@ void draw()
 
 void timer()
 {
-   /* hace un broadcast de que paso un tick
-   usa un sleep para esperar 5 segundos  */
+   broadcast();
 }
 
 
@@ -46,8 +45,6 @@ void map_creator(/* TO DO*/)
 
 void server_accept_conns(int s)
 {
-
-    /* tambien hacer el vector con las celulas que vas a ir pasando */
     while(1)
     {
         /* Acpetar nueva celula*/
@@ -68,7 +65,7 @@ int main(int argc, char* argv[])
     int s;
     thread ths[MAX_CLIENTS];
     s = set_acc_socket(atoi(argv[1]));
-    /* hacer map creator */
+
     /* Levantar servicios y aceptar conexiones */
    /* TO DO*/
 

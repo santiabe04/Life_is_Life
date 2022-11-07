@@ -10,12 +10,14 @@ using namespace std;
 // con el destino retornando un socket en estado conectado en caso de exito
 int connect_socket(int port)
 {
-   if ((socket_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) { // Le ponemos un nombre a la conexion o al socket que vamos a usar posteriormente
+    int socket_fd;
+    if ((socket_fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) { // Le ponemos un nombre a la conexion o al socket que vamos a usar posteriormente
         perror("creando socket");
         exit(1);
     }
 
     /* Establecer la dirección a la cual conectarse. */
+    struct sockaddr remote;
     remote.sin_family = AF_INET; // Asignacion del protocolo
     remote.sin_port = htons(port); // Asignacion del puerto
     inet_pton(AF_INET, "127.0.0.1", &(remote.sin_addr));
@@ -36,7 +38,7 @@ void con2neigh(string list, vector<int>& sockets)
     int posInit = 0;
     int posFound = 0;
     string splitted;
-    string pattern = ',';
+    string pattern = ",";
     int objectInt;
 
     while(posFound >= 0){
@@ -97,6 +99,7 @@ int run_cell(int port)
     /* Enviar msg al srv con el puerto de escucha */
     /* TO DO*/
     /* hacer un send */
+    int talk_to_listen = send(srv_socket, (char*)srv_req, lsn_port, 0)
     
     /* Obtener lista de vecinos inicial */
     /* hay una funcion sobre eso */
@@ -104,10 +107,12 @@ int run_cell(int port)
 
     /* Conectarse a los vecinos */
     /* con2neight */
+    con2neigh(srv_req.msg , sockets_vecinos)
     /* TO DO*/ 
 
     /* Enviar msg ready para el server */
     /* otro send */
+    int ready_to_server = send(srv_socket, "READY", 6, 0)
     /* TO DO*/
 
     /* Comenzar juego */
@@ -121,6 +126,7 @@ int run_cell(int port)
         {
             /* Publicar estado*/
             /* hacer un send */
+            int 
             /* TO DO*/
 
             /* Obtener estado de los vecinos*/
@@ -128,10 +134,13 @@ int run_cell(int port)
 
             /* Computar nuevo estado*/
             /* usar el set_state */
+            set_state()
             /* TO DO*/
 
             /* Informar al srv nuevo estado*/
             /* hacer un send */
+
+            int new_state = send(srv_socket, )
             /* TO DO*/
         }
         else if (strncmp(srv_req.type,"NEW",3) == 0)
