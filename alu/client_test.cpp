@@ -60,7 +60,13 @@ int main(int argc, char *argv[]) {
 
         recv_message(fd);
 
-        send_message(fd, "Thanks\n");
+        send_message(fd, "Gracias\n");
+
+        sleep(2);
+
+        send_message(fd, "Chau\n");
+
+        close_conn(fd);
     }
     else {
         printf("ERROR");

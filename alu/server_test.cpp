@@ -9,14 +9,17 @@
 #include <pthread.h>
 #include <thread>
 #include <vector>
+#include <semaphore.h>
 
 using namespace std;
 
 int fd,fd2,cell_len,numbytes,port;
-vector<int> cells_qeue = {{0,0,0},{0,0,0},{0,0,0}};
-vector<thread> cells_thread = {{NULL,NULL,NULL},{NULL,NULL,NULL},{NULL,NULL,NULL}};
-vector<vector<int>> grid = {{0,0,0},{0,0,0},{0,0,0}};
+vector<int> cells_connd;
+vector<int> cells_qeue;
+vector<thread> cells_thread;
+// vector<vector<int>> grid = {{0,0,0},{0,0,0},{0,0,0}};
 int available_cells = 0;
+int grid_side_size = 3;
 char buf[100];
 
 void send_message(int sock,const char* message) {
@@ -38,47 +41,91 @@ void close_cell(int sock) {
     close(sock);
 }
 
-void accept_conn() {
-    struct sockaddr_in cell;
+// void available_cells_grid() {
+//     for(int i = 0;i < grid.size();i++) {
+//         for(int j = 0;j < grid[i].size();j++) {
+//             if(grid[i][j] == 0) {
+//                 available_cells ++;
+//             }
+//         }
+//     }
+// }
 
-    cell_len = sizeof(struct sockaddr_in);
+int read_sock(char str[], int sockect) {
+    int status;
+    status = recv(sockect, str, 2*100, 0);
 
-    if((fd2 = accept(fd,(struct sockaddr *)&cell,&cell_len)) == -1) {
-        printf("Error en accept() \n");
-        exit(-1);
+    if (status == 0) {
+        return -1;
+    }
+    if (status < 0) { 
+        perror("ERROR WHILE RECEIVING");
+        exit(1);
     }
 
-    send_message(fd2, "Welcome\n");
-
-    recv_message(fd2);
+    str[status] = '\0';
+    printf("Recibido: %s\n",str);
+    return 0;
 }
 
-void available_cells_grid() {
-    for(int i = 0;i < grid.size();i++) {
-        for(int j = 0;j < grid[i].size();j++) {
-            if(grid[i][j] == 0) {
-                available_cells ++;
-            }
+void connd_cell_flow(int sock) {
+    send_message(sock, "Bienvenido\n");
+
+    recv_message(sock);
+
+    int status;
+
+    while(1) {
+        status = read_sock(buf,sock);
+
+        if(status != 0) {
+            break;
         }
     }
 }
 
 void connections_handler() {
     while(1) {
-        available_cells_grid();
+        cout << "Connecting" << endl;
 
-        for(int i = 0;i < available_cells;i++) {
-            cells_qeue.push_back(1);
+        struct sockaddr_in cell;
+
+        cell_len = sizeof(struct sockaddr_in);
+
+        if((fd2 = accept(fd,(struct sockaddr *)&cell,&cell_len)) == -1) {
+            printf("Error en accept() \n");
+            exit(-1);
         }
-
-        for(int i = 0;i < available_cells;i++){
-            cells_thread.push_back(thread(accept_conn));
-        }
-
-        for(int i = 0;i < cells_thread;i++){
-            cells_thread.push_back(thread(accept_conn));
+        else {
+            cout << "ACCEPTED" << endl;
+            cells_thread.push_back(thread(connd_cell_flow,fd2));
+            
+            // for(int i = 0; i < cells_thread.size(); i++) {
+            //     cells_thread[i].join();
+            // }
         }
     }
+
+    // while(1) {
+    //     if(cells_qeue.size() < grid_side_size) {
+    //         cout << "Here" << endl;
+    //         cells_qeue.push_back(1);
+    //     }
+    //     else {
+    //         for(int i = 0;i < cells_qeue.size();i++) {
+    //             cout << "Threading" << endl;
+    //             cells_connd.push_back(1);
+    //             cells_thread.push_back(thread(accept_conn));
+    //         }
+    //         cells_qeue.clear();
+    //         for(int i = 0;i < cells_qeue.size();i++) {
+    //             cout << "Threading Out" << endl;
+    //             cells_thread[i].join();
+    //             cells_thread.erase(cells_thread.begin());
+    //         }
+    //     }
+    //     brake;
+    // }
 }
 
 int main(int argc, char **argv) {
@@ -107,9 +154,7 @@ int main(int argc, char **argv) {
             exit(-1);
         }
 
-        thread conn_handler(connections_handler);
-
-        conn_handler.join();
+        connections_handler();
     }
 
     else {
