@@ -13,7 +13,7 @@
 
 using namespace std;
 
-int fd,fd2,cell_len,numbytes,port;
+int fd,fd2,cell_len,numbytes,port,cell_port;
 vector<int> cells_connd;
 vector<int> cells_qeue;
 vector<thread> cells_thread;
@@ -93,10 +93,15 @@ void connections_handler() {
         cell_len = sizeof(struct sockaddr_in);
 
         if((fd2 = accept(fd,(struct sockaddr *)&cell,&cell_len)) == -1) {
-            printf("Error en accept() \n");
+            printf("ERROR WHILE ACCEPTING CONNECTION \n");
             exit(-1);
         }
         else {
+            if (getsockname(fd, (struct sockaddr *)&cell, &cell_len) == -1)
+                perror("ERROR WHILE GETHOSTBYNAME");
+            else
+                cell_port = ntohs(sin.sin_port);
+            
             cout << "ACCEPTED" << endl;
             cells_thread.push_back(thread(connd_cell_flow,fd2));
             
