@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -12,7 +13,10 @@
 using namespace std;
 
 int fd,fd2,cell_len,numbytes,port;
-vector<int> cells;
+vector<int> cells_qeue = {{0,0,0},{0,0,0},{0,0,0}};
+vector<thread> cells_thread = {{NULL,NULL,NULL},{NULL,NULL,NULL},{NULL,NULL,NULL}};
+vector<vector<int>> grid = {{0,0,0},{0,0,0},{0,0,0}};
+int available_cells = 0;
 char buf[100];
 
 void send_message(int sock,const char* message) {
@@ -49,13 +53,31 @@ void accept_conn() {
     recv_message(fd2);
 }
 
-void connections_handler(vector<int> cells) {
+void available_cells_grid() {
+    for(int i = 0;i < grid.size();i++) {
+        for(int j = 0;j < grid[i].size();j++) {
+            if(grid[i][j] == 0) {
+                available_cells ++;
+            }
+        }
+    }
+}
+
+void connections_handler() {
     while(1) {
-        thread fd2_thread(accept_conn);
+        available_cells_grid();
 
-        fd2_thread.join();
+        for(int i = 0;i < available_cells;i++) {
+            cells_qeue.push_back(1);
+        }
 
-        close_cell(fd2);
+        for(int i = 0;i < available_cells;i++){
+            cells_thread.push_back(thread(accept_conn));
+        }
+
+        for(int i = 0;i < cells_thread;i++){
+            cells_thread.push_back(thread(accept_conn));
+        }
     }
 }
 
@@ -85,7 +107,7 @@ int main(int argc, char **argv) {
             exit(-1);
         }
 
-        thread conn_handler(connections_handler,cells);
+        thread conn_handler(connections_handler);
 
         conn_handler.join();
     }

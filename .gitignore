@@ -5,6 +5,9 @@
 
 .vscode/
 alu/.vscode/
+alu/client_test.exe
+alu/client_test_2.exe
+alu/server_test.exe
 
 # User-specific files
 *.rsuser
