@@ -100,7 +100,7 @@ void connections_handler() {
             if (getsockname(fd, (struct sockaddr *)&cell, &cell_len) == -1)
                 perror("ERROR WHILE GETHOSTBYNAME");
             else
-                cell_port = ntohs(sin.sin_port);
+                cell_port = ntohs(cell.sin_port);
             
             cout << "ACCEPTED" << endl;
             cells_thread.push_back(thread(connd_cell_flow,fd2));
