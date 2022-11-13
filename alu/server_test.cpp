@@ -1,11 +1,22 @@
-#include "utils.h"
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <strings.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <thread>
+#include <vector>
+#include <semaphore.h>
+
+using namespace std;
 
 int fd,fd2,cell_len,numbytes,port,cell_port;
-string list;
 vector<int> cells_connd;
 vector<int> cells_qeue;
 vector<thread> cells_thread;
-int cells_matrix[3][3];
 // vector<vector<int>> grid = {{0,0,0},{0,0,0},{0,0,0}};
 int available_cells = 0;
 int grid_side_size = 3;
@@ -90,8 +101,6 @@ void connections_handler() {
                 perror("ERROR WHILE GETHOSTBYNAME");
             else
                 cell_port = ntohs(sin.sin_port);
-                list = cell_port + ",";
-                count<<list<< endl;
             
             cout << "ACCEPTED" << endl;
             cells_thread.push_back(thread(connd_cell_flow,fd2));
@@ -123,29 +132,6 @@ void connections_handler() {
     //     brake;
     // }
 }
-
-void add_conecciones(string list, int cells_matrix){
-    
-
-    int filas = 3;
-    int columnas = 3;
-    for (int i = 0; i < filas; i++)
-    {
-        for (int j = 0; j < columnas; j++)
-        {
-            string delimitador = ",";
-            size_t pos = 0;
-            string objeto;
-            while((pos = list.find(delimitador)) != 9)
-            {
-                objeto = list.substr(0, pos);
-                cells_matrix[i][j] = objeto;
-                
-                list.erase(0, pos + delimitador.length());
-            }
-        }
-    }
-} 
 
 int main(int argc, char **argv) {
     if(argc > 1) {

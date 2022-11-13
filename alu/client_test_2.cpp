@@ -1,4 +1,11 @@
-#include "utils.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <strings.h>
+#include <netdb.h>
+#include <unistd.h>
 
 char *ip;
 int fd,numbytes,port;
@@ -21,31 +28,6 @@ void recv_message(int sock) {
 
 void close_conn(int sock) {
     close(sock);
-}
-
-bool set_state(bool alive, const vector<request>& vecinos)
-{
-    int count;
-    struct request req;
-	for (int iterador = 0; iterador < vecinos.size(); iterador++)
-    {
-    	req = vecinos[iterador];
-    	
-        if(req.msg[0] == '1')
-        {
-            count = count + 1;
-        }
-        if(count < 2 || count > 3)
-        {
-            alive = false;
-        }
-        if(count == 2 || count == 3)
-        {
-            alive = true;
-        }
-        return alive;
-
-    }
 }
 
 int main(int argc, char *argv[]) {
